@@ -10,6 +10,7 @@
 （第3回で、用語集を検索できるエージェントにして改善する）
 """
 
+
 import argparse
 
 from google import genai
@@ -25,8 +26,16 @@ def ask(question: str) -> str:
     client = genai.Client(api_key=get_api_key())
     response = client.models.generate_content(model=MODEL, contents=question)
 
-    # TODO(第1回 演習): response.usage_metadata から
-    #   入力トークン数と出力トークン数を表示してみよう（Copilotに頼んでよい）
+    usage_metadata = getattr(response, "usage_metadata", None)
+    if usage_metadata is not None:
+        if isinstance(usage_metadata, dict):
+            input_tokens = usage_metadata.get("prompt_token_count", 0)
+            output_tokens = usage_metadata.get("candidates_token_count", 0)
+        else:
+            input_tokens = getattr(usage_metadata, "prompt_token_count", 0)
+            output_tokens = getattr(usage_metadata, "candidates_token_count", 0)
+        print(f"[input tokens] {input_tokens}")
+        print(f"[output tokens] {output_tokens}")
 
     return response.text
 
