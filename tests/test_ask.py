@@ -20,6 +20,12 @@ class _DummyModels:
 class _DummyClient:
     models = _DummyModels()
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        pass
+
 
 def test_ask_prints_input_and_output_token_counts(monkeypatch, capsys):
     monkeypatch.setattr("app.ask.genai.Client", lambda api_key: _DummyClient())
